@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block jquery %}
+  window.onload = function(){
+      if(navigator.geolocation)
+          navigator.geolocation.getCurrentPosition(onSuccess, onError);
+  }
+
+  function onSuccess(location) {
+      $lat = location.coords.latitude;
+      $lng = location.coords.longitude;
+      $loc_text = location.coords.latitude + ", " + location.coords.longitude;
+      console.log($loc_text);
+      $('#search_form').append("<input type=\"hidden\" name=\"lat\" value=\"" + $lat + "\">");
+      $('#search_form').append("<input type=\"hidden\" name=\"lng\" value=\"" + $lng + "\">");
+  }
+
+  function onError() {
+      console.log("Location not allowed.");
+  }
+{% endblock %}
+
+
+{% block jumbotron %}
+
+<div class="jumbotron">
+  <h1>Welcome Home</h1>
+  <p>This is a django-based applications for locating specific spot with open-source API. It is certainly an interesting development practice for a back-end engineer.</p>
+  <p>
+    <a class="btn btn-lg btn-primary" href="#" role="button">View more projects &raquo;</a>
+  </p>
+</div>
+
+{% endblock %}
+
+{% block content %}
+
+<form method="POST" action="" id="search_form">{% csrf_token %}
+  <input type="text" name="search" />
+  <input type="submit" value="submit" />
+</form>
+
+{% if locations %}
+
+<h3>Your search for: {{ query }}</h3>
+<ul>
+  {% for name, loc_id in locations %}
+  <li><a href="{% url 'single_location' loc_id %}">{{ name }}</a></li>
+  {% endfor %}
+</ul>
+
+{% elif query %}
+
+<h3>No results for: {{ query }}</h3>
+
+{% endif %}
+
+{% endblock %}
